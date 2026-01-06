@@ -1,0 +1,33 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Docker host system metrics
+  - job_name: 'docker-host'
+    static_configs:
+      - targets: ['node-exporter:9100']
+
+  # Pi-hole metrics
+  # SETUP: Install ekofr/pihole-exporter on your Pi-hole host
+  # Then update the IP below to your Pi-hole's IP address
+  - job_name: 'pihole'
+    static_configs:
+      - targets: ['192.168.1.200:9617']  # UPDATE THIS IP
+        labels:
+          instance: 'pihole'
+
+  # Additional RPi/servers running node-exporter
+  # SETUP: Install node-exporter on each machine, then add targets below
+  # - job_name: 'homelab-servers'
+  #   static_configs:
+  #     - targets:
+  #         - '192.168.1.201:9100'  # rpi-1
+  #         - '192.168.1.202:9100'  # rpi-2
+  #       labels:
+  #         group: 'raspberry-pi'

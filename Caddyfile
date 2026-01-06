@@ -1,0 +1,21 @@
+# HTTPS for Grafana (local domain with self-signed cert)
+grafana.homelab.local {
+    tls internal
+    reverse_proxy grafana:3000
+}
+
+# HTTP access (localhost and Prometheus)
+:80 {
+    encode gzip
+
+    # Prometheus at /prometheus
+    handle /prometheus* {
+        uri strip_prefix /prometheus
+        reverse_proxy prometheus:9090
+    }
+
+    # Grafana at root (redirect to HTTPS if accessed via domain)
+    handle {
+        reverse_proxy grafana:3000
+    }
+}

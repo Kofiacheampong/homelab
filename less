@@ -1,0 +1,563 @@
+[4mMAN[24m(1)                                             Manual pager utils                                            [4mMAN[24m(1)
+
+[1mNAME[0m
+       man - an interface to the system reference manuals
+
+[1mSYNOPSIS[0m
+       [1mman [22m[[4mman[24m [4moptions[24m] [[[4msection[24m] [4mpage[24m ...] ...
+       [1mman -k [22m[[4mapropos[24m [4moptions[24m] [4mregexp[24m ...
+       [1mman -K [22m[[4mman[24m [4moptions[24m] [[4msection[24m] [4mterm[24m ...
+       [1mman -f [22m[[4mwhatis[24m [4moptions[24m] [4mpage[24m ...
+       [1mman -l [22m[[4mman[24m [4moptions[24m] [4mfile[24m ...
+       [1mman -w[22m|[1m-W [22m[[4mman[24m [4moptions[24m] [4mpage[24m ...
+
+[1mDESCRIPTION[0m
+       [1mman [22mis the system's manual pager.  Each [4mpage[24m argument given to [1mman [22mis normally the name of a program, utility or
+       function.   The  [4mmanual[24m [4mpage[24m associated with each of these arguments is then found and displayed.  A [4msection[24m, if
+       provided, will direct [1mman [22mto look only in that [4msection[24m of the manual.  The default action is to search in all of
+       the available [4msections[24m following a pre-defined order (see [1mDEFAULTS[22m), and to show only the first [4mpage[24m found, even
+       if [4mpage[24m exists in several [4msections[24m.
+
+       The table below shows the [4msection[24m numbers of the manual followed by the types of pages they contain.
+
+       1   Executable programs or shell commands
+       2   System calls (functions provided by the kernel)
+       3   Library calls (functions within program libraries)
+       4   Special files (usually found in [4m/dev[24m)
+       5   File formats and conventions, e.g. [4m/etc/passwd[0m
+       6   Games
+       7   Miscellaneous (including macro packages and conventions), e.g. [1mman[22m(7), [1mgroff[22m(7), [1mman-pages[22m(7)
+       8   System administration commands (usually only for root)
+       9   Kernel routines [Non standard]
+
+       A manual [4mpage[24m consists of several sections.
+
+       Conventional section names  include  [1mNAME[22m,  [1mSYNOPSIS[22m,  [1mCONFIGURATION[22m,  [1mDESCRIPTION[22m,  [1mOPTIONS[22m,  [1mEXIT STATUS[22m,  [1mRE‐[0m
+       [1mTURN VALUE[22m, [1mERRORS[22m, [1mENVIRONMENT[22m, [1mFILES[22m, [1mVERSIONS[22m, [1mSTANDARDS[22m, [1mNOTES[22m, [1mBUGS[22m, [1mEXAMPLE[22m, [1mAUTHORS[22m, and [1mSEE ALSO[22m.
+
+       The following conventions apply to the [1mSYNOPSIS [22msection and can be used as a guide in other sections.
+
+       [1mbold text          [22mtype exactly as shown.
+       [4mitalic[24m [4mtext[24m        replace with appropriate argument.
+       [[1m-abc[22m]             any or all arguments within [ ] are optional.
+       [1m-a[22m|[1m-b              [22moptions delimited by | cannot be used together.
+       [4margument[24m ...       [4margument[24m is repeatable.
+       [[4mexpression[24m] ...   entire [4mexpression[24m within [ ] is repeatable.
+
+       Exact  rendering  may vary depending on the output device.  For instance, man will usually not be able to render
+       italics when running in a terminal, and will typically use underlined or coloured text instead.
+
+       The command or function illustration is a pattern that should match all possible invocations.  In some cases  it
+       is  advisable  to  illustrate  several  exclusive invocations as is shown in the [1mSYNOPSIS [22msection of this manual
+       page.
+
+[1mEXAMPLES[0m
+       [1mman [4m[22mls[0m
+           Display the manual page for the [4mitem[24m (program) [4mls[24m.
+
+       [1mman [4m[22mman[24m.[4m7[0m
+           Display the manual page for macro package [4mman[24m from section [4m7[24m.  (This is an alternative spelling  of  "[1mman  [4m[22m7[0m
+           [4mman[24m".)
+
+       [1mman '[4m[22mman[24m([4m7[24m)'
+           Display the manual page for macro package [4mman[24m from section [4m7[24m.  (This is another alternative spelling of "[1mman[0m
+           [4m7[24m [4mman[24m".  It may be more convenient when copying and pasting cross-references to manual pages.  Note that the
+           parentheses must normally be quoted to protect them from the shell.)
+
+       [1mman -a [4m[22mintro[0m
+           Display, in succession, all of the available [4mintro[24m manual pages contained within the manual.  It is possible
+           to quit between successive displays or skip any of them.
+
+       [1mman -t [4m[22mbash[24m | [4mlpr[24m [4m-Pps[0m
+           Format  the manual page for [4mbash[24m into the default [1mtroff [22mor [1mgroff [22mformat and pipe it to the printer named [4mps[24m.
+           The default output for [1mgroff [22mis usually PostScript.  [1mman --help [22mshould advise as to which processor is bound
+           to the [1m-t [22moption.
+
+       [1mman -l -T[4m[22mdvi[24m [4m./foo.1x.gz[24m [1m> [4m[22m./foo.1x.dvi[0m
+           This command will decompress and format the nroff source manual page [4m./foo.1x.gz[24m into a  [1mdevice  independent[0m
+           [1m(dvi)  [22mfile.   The  redirection  is  necessary as the [1m-T [22mflag causes output to be directed to [1mstdout [22mwith no
+           pager.  The output could be viewed with a program such as [1mxdvi [22mor further processed into PostScript using  a
+           program such as [1mdvips[22m.
+
+       [1mman -k [4m[22mprintf[0m
+           Search the short descriptions and manual page names for the keyword [4mprintf[24m as regular expression.  Print out
+           any matches.  Equivalent to [1mapropos [4m[22mprintf[24m[1m.[0m
+
+       [1mman -f [4m[22msmail[0m
+           Lookup  the  manual pages referenced by [4msmail[24m and print out the short descriptions of any found.  Equivalent
+           to [1mwhatis [4m[22msmail[24m[1m.[0m
+
+[1mOVERVIEW[0m
+       Many options are available to [1mman [22min order to give as much flexibility as possible to the user.  Changes can  be
+       made to the search path, section order, output processor, and other behaviours and operations detailed below.
+
+       If set, various environment variables are interrogated to determine the operation of [1mman[22m.  It is possible to set
+       the  "catch-all"  variable $[1mMANOPT [22mto any string in command line format, with the exception that any spaces used
+       as part of an option's argument must be escaped (preceded by a backslash).  [1mman  [22mwill  parse  $[1mMANOPT  [22mprior  to
+       parsing  its own command line.  Those options requiring an argument will be overridden by the same options found
+       on the command line.  To reset all of the options set in $[1mMANOPT[22m, [1m-D [22mcan be specified  as  the  initial  command
+       line  option.   This will allow man to "forget" about the options specified in $[1mMANOPT[22m, although they must still
+       have been valid.
+
+       Manual pages are normally stored in [1mnroff[22m(1) format under a directory such as [4m/usr/share/man[24m.  In some installa‐
+       tions, there may also be preformatted [4mcat[24m [4mpages[24m to improve performance.  See [1mmanpath[22m(5)  for  details  of  where
+       these files are stored.
+
+       This package supports manual pages in multiple languages, controlled by your [4mlocale[24m.  If your system did not set
+       this  up  for you automatically, then you may need to set $[1mLC_MESSAGES[22m, $[1mLANG[22m, or another system-dependent envi‐
+       ronment variable to indicate your preferred locale, usually specified in the [1mPOSIX [22mformat:
+
+       <[4mlanguage[24m>[[1m_[22m<[4mterritory[24m>[[1m.[22m<[4mcharacter-set[24m>[[1m,[22m<[4mversion[24m>]]]
+
+       If the desired page is available in your [4mlocale[24m, it will be displayed in lieu of the standard (usually  American
+       English) page.
+
+       If  you  find that the translations supplied with this package are not available in your native language and you
+       would like to supply them, please contact the maintainer who will be coordinating such activity.
+
+       Individual manual pages are normally written and maintained by the maintainers  of  the  program,  function,  or
+       other topic that they document, and are not included with this package.  If you find that a manual page is miss‐
+       ing or inadequate, please report that to the maintainers of the package in question.
+
+       For  information regarding other features and extensions available with this manual pager, please read the docu‐
+       ments supplied with the package.
+
+[1mDEFAULTS[0m
+       The order of sections to search may be overridden by the environment variable $[1mMANSECT [22mor by the [1mSECTION  [22mdirec‐
+       tive in [4m/etc/manpath.config[24m.  By default it is as follows:
+
+              1 n l 8 3 0 2 3type 3posix 3pm 3perl 3am 5 4 9 6 7
+
+       The  formatted  manual page is displayed using a [4mpager[24m.  This can be specified in a number of ways, or else will
+       fall back to a default (see option [1m-P [22mfor details).
+
+       The filters are deciphered by a number of means.  Firstly, the command line option [1m-p [22mor the  environment  vari‐
+       able $[1mMANROFFSEQ [22mis interrogated.  If [1m-p [22mwas not used and the environment variable was not set, the initial line
+       of  the  nroff file is parsed for a preprocessor string.  To contain a valid preprocessor string, the first line
+       must resemble
+
+       [1m'\" [22m<[1mstring[22m>
+
+       where [1mstring [22mcan be any combination of letters described by option [1m-p [22mbelow.
+
+       If none of the above methods provide any filter information, a default set is used.
+
+       A formatting pipeline is formed from the filters and the primary formatter ([1mnroff [22mor [[1mtg[22m][1mroff [22mwith [1m-t[22m) and  exe‐
+       cuted.   Alternatively, if an executable program [4mmandb_nfmt[24m (or [4mmandb_tfmt[24m with [1m-t[22m) exists in the man tree root,
+       it is executed instead.  It gets passed the manual source file, the preprocessor string, and optionally the  de‐
+       vice specified with [1m-T [22mor [1m-E [22mas arguments.
+
+[1mOPTIONS[0m
+       Non-argument  options that are duplicated either on the command line, in $[1mMANOPT[22m, or both, are not harmful.  For
+       options that require an argument, each duplication will override the previous argument value.
+
+   [1mGeneral options[0m
+       [1m-C [4m[22mfile[24m, [1m--config-file=[4m[22mfile[0m
+              Use this user configuration file rather than the default of [4m~/.manpath[24m.
+
+       [1m-d[22m, [1m--debug[0m
+              Print debugging information.
+
+       [1m-D[22m, [1m--default[0m
+              This option is normally issued as the very first option and resets [1mman's [22mbehaviour to its  default.   Its
+              use  is  to  reset those options that may have been set in $[1mMANOPT[22m.  Any options that follow [1m-D [22mwill have
+              their usual effect.
+
+       [1m--warnings[22m[=[4mwarnings[24m]
+              Enable warnings from [4mgroff[24m.  This may be used to perform sanity checks  on  the  source  text  of  manual
+              pages.  [4mwarnings[24m is a comma-separated list of warning names; if it is not supplied, the default is "mac".
+              To  disable  a  [4mgroff[24m warning, prefix it with "!": for example, [1m--warnings=mac,!break [22menables warnings in
+              the "mac" category and disables warnings in the "break" category.  See the “Warnings” node in [1minfo  groff[0m
+              for a list of available warning names.
+
+   [1mMain modes of operation[0m
+       [1m-f[22m, [1m--whatis[0m
+              Approximately equivalent to [1mwhatis[22m.  Display a short description from the manual page, if available.  See
+              [1mwhatis[22m(1) for details.
+
+       [1m-k[22m, [1m--apropos[0m
+              Approximately  equivalent to [1mapropos[22m.  Search the short manual page descriptions for keywords and display
+              any matches.  See [1mapropos[22m(1) for details.
+
+       [1m-K[22m, [1m--global-apropos[0m
+              Search for text in all manual pages.  This is a brute-force search, and is likely to take some  time;  if
+              you  can,  you  should  specify a section to reduce the number of pages that need to be searched.  Search
+              terms may be simple strings (the default), or regular expressions if the [1m--regex [22moption is used.
+
+              Note that this searches the [4msources[24m of the manual pages, not the rendered text, and so may include  false
+              positives  due to things like comments in source files, or false negatives due to things like hyphens be‐
+              ing written as "\-" in source files.  Searching the rendered text would be much slower.
+
+       [1m-l[22m, [1m--local-file[0m
+              Activate "local" mode.  Format and display local manual files instead of searching through  the  system's
+              manual  collection.  Each manual page argument will be interpreted as an nroff source file in the correct
+              format.  No cat file is produced.  If '-' is listed as one of the arguments, input  will  be  taken  from
+              stdin.
+
+              If  this  option is not used, then [1mman [22mwill also fall back to interpreting manual page arguments as local
+              file names if the argument contains a "/" character, since that is a good indication  that  the  argument
+              refers to a path on the file system.
+
+       [1m-w[22m, [1m--where[22m, [1m--path[22m, [1m--location[0m
+              Don't  actually display the manual page, but do print the location of the source nroff file that would be
+              formatted.  If the [1m-a [22moption is also used, then print the locations of all source files  that  match  the
+              search criteria.
+
+       [1m-W[22m, [1m--where-cat[22m, [1m--location-cat[0m
+              Don't actually display the manual page, but do print the location of the preformatted cat file that would
+              be displayed.  If the [1m-a [22moption is also used, then print the locations of all preformatted cat files that
+              match the search criteria.
+
+              If [1m-w [22mand [1m-W [22mare both used, then print both source file and cat file separated by a space.  If all of [1m-w[22m,
+              [1m-W[22m, and [1m-a [22mare used, then do this for each possible match.
+
+       [1m-c[22m, [1m--catman[0m
+              This option is not for general use and should only be used by the [1mcatman [22mprogram.
+
+       [1m-R [4m[22mencoding[24m, [1m--recode[22m=[4mencoding[0m
+              Instead  of formatting the manual page in the usual way, output its source converted to the specified [4men‐[0m
+              [4mcoding[24m.  If you already know the encoding of the source file, you can also use [1mmanconv[22m(1) directly.  How‐
+              ever, this option allows you to convert several manual pages to a single encoding without having  to  ex‐
+              plicitly  state the encoding of each, provided that they were already installed in a structure similar to
+              a manual page hierarchy.
+
+              Consider using [1mman-recode[22m(1) instead for converting multiple manual pages, since it has an interface  de‐
+              signed for bulk conversion and so can be much faster.
+
+   [1mFinding manual pages[0m
+       [1m-L [4m[22mlocale[24m, [1m--locale=[4m[22mlocale[0m
+              [1mman  [22mwill  normally determine your current locale by a call to the C function [1msetlocale[22m(3) which interro‐
+              gates various environment variables, possibly including $[1mLC_MESSAGES [22mand $[1mLANG[22m.  To temporarily  override
+              the  determined  value, use this option to supply a [4mlocale[24m string directly to [1mman[22m.  Note that it will not
+              take effect until the search for pages actually begins.  Output such as the help message will  always  be
+              displayed in the initially determined locale.
+
+       [1m-m [4m[22msystem[24m[,...], [1m--systems=[4m[22msystem[24m[,...]
+              If  this  system has access to other operating systems' manual pages, they can be accessed using this op‐
+              tion.  To search for a manual page from NewOS's manual page collection, use the option [1m-m NewOS[22m.
+
+              The [4msystem[24m specified can be a combination of comma delimited operating system names.  To include a search
+              of the native operating system's manual pages, include the system name [1mman [22min the argument string.   This
+              option will override the $[1mSYSTEM [22menvironment variable.
+
+       [1m-M [4m[22mpath[24m, [1m--manpath=[4m[22mpath[0m
+              Specify  an alternate manpath to use.  By default, [1mman [22muses [1mmanpath [22mderived code to determine the path to
+              search.  This option overrides the $[1mMANPATH [22menvironment variable and causes option [1m-m [22mto be ignored.
+
+              A path specified as a manpath must be the root of a manual page hierarchy structured into sections as de‐
+              scribed in the man-db manual (under "The manual page system").  To view manual pages outside such hierar‐
+              chies, see the [1m-l [22moption.
+
+       [1m-S [4m[22mlist[24m, [1m-s [4m[22mlist[24m, [1m--sections=[4m[22mlist[0m
+              The given [4mlist[24m is a colon- or comma-separated list of sections, used to determine which  manual  sections
+              to  search and in what order.  This option overrides the $[1mMANSECT [22menvironment variable.  (The [1m-s [22mspelling
+              is for compatibility with System V.)
+
+       [1m-e [4m[22msub-extension[24m, [1m--extension=[4m[22msub-extension[0m
+              Some systems incorporate large packages of manual pages, such as those that accompany  the  [1mTcl  [22mpackage,
+              into  the main manual page hierarchy.  To get around the problem of having two manual pages with the same
+              name such as [1mexit[22m(3), the [1mTcl [22mpages were usually all assigned to section [1ml[22m.  As this is  unfortunate,  it
+              is now possible to put the pages in the correct section, and to assign a specific "extension" to them, in
+              this case, [1mexit[22m(3tcl).  Under normal operation, [1mman [22mwill display [1mexit[22m(3) in preference to [1mexit[22m(3tcl).  To
+              negotiate this situation and to avoid having to know which section the page you require resides in, it is
+              now  possible to give [1mman [22ma [4msub-extension[24m string indicating which package the page must belong to.  Using
+              the above example, supplying the option [1m-e tcl [22mto [1mman [22mwill restrict the search to pages having an  exten‐
+              sion of [1m*tcl[22m.
+
+       [1m-i[22m, [1m--ignore-case[0m
+              Ignore case when searching for manual pages.  This is the default.
+
+       [1m-I[22m, [1m--match-case[0m
+              Search for manual pages case-sensitively.
+
+       [1m--regex[0m
+              Show all pages with any part of either their names or their descriptions matching each [4mpage[24m argument as a
+              regular  expression,  as with [1mapropos[22m(1).  Since there is usually no reasonable way to pick a "best" page
+              when searching for a regular expression, this option implies [1m-a[22m.
+
+       [1m--wildcard[0m
+              Show all pages with any part of either their names or their descriptions matching each [4mpage[24m argument  us‐
+              ing  shell-style  wildcards, as with [1mapropos[22m(1) [1m--wildcard[22m.  The [4mpage[24m argument must match the entire name
+              or description, or match on word boundaries in the description.  Since there is usually no reasonable way
+              to pick a "best" page when searching for a wildcard, this option implies [1m-a[22m.
+
+       [1m--names-only[0m
+              If the [1m--regex [22mor [1m--wildcard [22moption is used, match only  page  names,  not  page  descriptions,  as  with
+              [1mwhatis[22m(1).  Otherwise, no effect.
+
+       [1m-a[22m, [1m--all[0m
+              By  default,  [1mman  [22mwill  exit after displaying the most suitable manual page it finds.  Using this option
+              forces [1mman [22mto display all the manual pages with names that match the search criteria.
+
+       [1m-u[22m, [1m--update[0m
+              This option causes [1mman [22mto update its database caches of installed manual pages.  This is only  needed  in
+              rare situations, and it is normally better to run [1mmandb[22m(8) instead.
+
+       [1m--no-subpages[0m
+              By  default, [1mman [22mwill try to interpret pairs of manual page names given on the command line as equivalent
+              to a single manual page name containing a hyphen or an underscore.  This supports the common  pattern  of
+              programs  that implement a number of subcommands, allowing them to provide manual pages for each that can
+              be accessed using similar syntax as would be used to invoke the subcommands themselves.  For example:
+
+                $ man -aw git diff
+                /usr/share/man/man1/git-diff.1.gz
+
+              To disable this behaviour, use the [1m--no-subpages [22moption.
+
+                $ man -aw --no-subpages git diff
+                /usr/share/man/man1/git.1.gz
+                /usr/share/man/man3/Git.3pm.gz
+                /usr/share/man/man1/diff.1.gz
+
+   [1mControlling formatted output[0m
+       [1m-P [4m[22mpager[24m, [1m--pager=[4m[22mpager[0m
+              Specify which output pager to use.  By default, [1mman [22muses [1mpager[22m, falling back to [1mcat [22mif [1mpager [22mis not found
+              or is not executable.  This option overrides the $[1mMANPAGER [22menvironment variable, which in turn  overrides
+              the $[1mPAGER [22menvironment variable.  It is not used in conjunction with [1m-f [22mor [1m-k[22m.
+
+              The  value  may  be  a  simple command name or a command with arguments, and may use shell quoting (back‐
+              slashes, single quotes, or double quotes).  It may not use pipes to connect  multiple  commands;  if  you
+              need  that, use a wrapper script, which may take the file to display either as an argument or on standard
+              input.
+
+       [1m-r [4m[22mprompt[24m, [1m--prompt=[4m[22mprompt[0m
+              If a recent version of [1mless [22mis used as the pager, [1mman [22mwill attempt to set its prompt  and  some  sensible
+              options.  The default prompt looks like
+
+               [1mManual page [4m[22mname[24m[1m([4m[22msec[24m[1m) line [4m[22mx[0m
+
+              where  [4mname[24m  denotes  the  manual page name, [4msec[24m denotes the section it was found under and [4mx[24m the current
+              line number.  This is achieved by using the $[1mLESS [22menvironment variable.
+
+              Supplying [1m-r [22mwith a string will override this default.  The string may contain  the  text  [1m$MAN_PN  [22mwhich
+              will  be  expanded to the name of the current manual page and its section name surrounded by "(" and ")".
+              The string used to produce the default could be expressed as
+
+              [1m\ Manual\ page\ \$MAN_PN\ ?ltline\ %lt?L/%L.:[0m
+              [1mbyte\ %bB?s/%s..?\ (END):?pB\ %pB\\%..[0m
+              [1m(press h for help or q to quit)[0m
+
+              It is broken into three lines here for the sake of readability only.  For its  meaning  see  the  [1mless[22m(1)
+              manual  page.   The  prompt  string  is first evaluated by the shell.  All double quotes, back-quotes and
+              backslashes in the prompt must be escaped by a preceding backslash.  The prompt string may end in an  es‐
+              caped $ which may be followed by further options for less.  By default [1mman [22msets the [1m-ix8 [22moptions.
+
+              The  $[1mMANLESS  [22menvironment variable described below may be used to set a default prompt string if none is
+              supplied on the command line.
+
+       [1m-7[22m, [1m--ascii[0m
+              When viewing a pure [4mascii[24m(7) manual page on a 7 bit terminal or terminal emulator,  some  characters  may
+              not  display  correctly  when  using the [4mlatin1[24m(7) device description with [1mGNU nroff[22m.  This option allows
+              pure [4mascii[24m manual pages to be displayed in [4mascii[24m with the [4mlatin1[24m  device.   It  will  not  translate  any
+              [4mlatin1[24m  text.   The  following  table shows the translations performed: some parts of it may only be dis‐
+              played properly when using [1mGNU nroff[22m's [4mlatin1[24m(7) device.
+
+              Description           Octal   latin1   ascii
+              ─────────────────────────────────────────────
+              continuation hyphen    255      ‐        -
+              bullet (middle dot)    267      •        o
+              acute accent           264      ´        '
+              multiplication sign    327      ×        x
+
+              If the [4mlatin1[24m column displays correctly, your terminal may be set up for [4mlatin1[24m characters and  this  op‐
+              tion  is  not  necessary.  If the [4mlatin1[24m and [4mascii[24m columns are identical, you are reading this page using
+              this option or [1mman [22mdid not format this page using the [4mlatin1[24m device description.  If the [4mlatin1[24m column is
+              missing or corrupt, you may need to view manual pages with this option.
+
+              This option is ignored when using options [1m-t[22m, [1m-H[22m, [1m-T[22m, or [1m-Z [22mand may  be  useless  for  [1mnroff  [22mother  than
+              [1mGNU's[22m.
+
+       [1m-E [4m[22mencoding[24m, [1m--encoding[22m=[4mencoding[0m
+              Generate  output  for  a character encoding other than the default.  For backward compatibility, [4mencoding[0m
+              may be an [1mnroff [22mdevice such as [1mascii[22m, [1mlatin1[22m, or [1mutf8 [22mas well as a true character encoding such as [1mUTF-8[22m.
+
+       [1m--no-hyphenation[22m, [1m--nh[0m
+              Normally, [1mnroff [22mwill automatically hyphenate text at line breaks even in words that do  not  contain  hy‐
+              phens,  if  it  is  necessary to do so to lay out words on a line without excessive spacing.  This option
+              disables automatic hyphenation, so words will only be hyphenated if they already contain hyphens.
+
+              If you are writing a manual page and simply want to prevent [1mnroff [22mfrom hyphenating a word at an  inappro‐
+              priate  point, do not use this option, but consult the [1mnroff [22mdocumentation instead; for instance, you can
+              put "\%" inside a word to indicate that it may be hyphenated at that point, or put "\%" at the start of a
+              word to prevent it from being hyphenated.
+
+       [1m--no-justification[22m, [1m--nj[0m
+              Normally, [1mnroff [22mwill automatically justify text to both margins.  This option  disables  full  justifica‐
+              tion, leaving justified only to the left margin, sometimes called "ragged-right" text.
+
+              If  you are writing a manual page and simply want to prevent [1mnroff [22mfrom justifying certain paragraphs, do
+              not use this option, but consult the [1mnroff [22mdocumentation instead; for instance, you can  use  the  ".na",
+              ".nf", ".fi", and ".ad" requests to temporarily disable adjusting and filling.
+
+       [1m-p [4m[22mstring[24m, [1m--preprocessor=[4m[22mstring[0m
+              Specify  the  sequence  of  preprocessors to run before [1mnroff [22mor [1mtroff[22m/[1mgroff[22m.  Not all installations will
+              have a full set of preprocessors.  Some of the preprocessors and the letters used to designate them  are:
+              [1meqn  [22m([1me[22m), [1mgrap [22m([1mg[22m), [1mpic [22m([1mp[22m), [1mtbl [22m([1mt[22m), [1mvgrind [22m([1mv[22m), [1mrefer [22m([1mr[22m).  This option overrides the $[1mMANROFFSEQ [22menvi‐
+              ronment variable.  [1mzsoelim [22mis always run as the very first preprocessor.
+
+       [1m-t[22m, [1m--troff[0m
+              Use [4mgroff[24m [4m-mandoc[24m to format the manual page to stdout.  This option is not required in  conjunction  with
+              [1m-H[22m, [1m-T[22m, or [1m-Z[22m.
+
+       [1m-T[22m[[4mdevice[24m], [1m--troff-device[22m[=[4mdevice[24m]
+              This  option  is used to change [1mgroff [22m(or possibly [1mtroff's[22m) output to be suitable for a device other than
+              the default.  It implies [1m-t[22m.  Examples (provided with Groff-1.17) include [1mdvi[22m, [1mlatin1[22m, [1mps[22m, [1mutf8[22m, [1mX75  [22mand
+              [1mX100[22m.
+
+       [1m-H[22m[[4mbrowser[24m], [1m--html[22m[=[4mbrowser[24m]
+              This  option will cause [1mgroff [22mto produce HTML output, and will display that output in a web browser.  The
+              choice of browser is determined by the optional [4mbrowser[24m argument if one is provided, by the $[1mBROWSER  [22men‐
+              vironment  variable,  or  by a compile-time default if that is unset (usually [1mlynx[22m).  This option implies
+              [1m-t[22m, and will only work with [1mGNU troff[22m.
+
+       [1m-X[22m[[4mdpi[24m], [1m--gxditview[22m[=[4mdpi[24m]
+              This option displays the output of [1mgroff [22min a graphical window using  the  [1mgxditview  [22mprogram.   The  [4mdpi[0m
+              (dots  per inch) may be 75, 75-12, 100, or 100-12, defaulting to 75; the -12 variants use a 12-point base
+              font.  This option implies [1m-T [22mwith the X75, X75-12, X100, or X100-12 device respectively.
+
+       [1m-Z[22m, [1m--ditroff[0m
+              [1mgroff [22mwill run [1mtroff [22mand then use an appropriate post-processor to produce output suitable for the chosen
+              device.  If [4mgroff[24m [4m-mandoc[24m is [1mgroff[22m, this option is passed to [1mgroff [22mand will suppress the use of  a  post-
+              processor.  It implies [1m-t[22m.
+
+   [1mGetting help[0m
+       [1m-?[22m, [1m--help[0m
+              Print a help message and exit.
+
+       [1m--usage[0m
+              Print a short usage message and exit.
+
+       [1m-V[22m, [1m--version[0m
+              Display version information.
+
+[1mEXIT STATUS[0m
+       [1m0      [22mSuccessful program execution.
+
+       [1m1      [22mUsage, syntax or configuration file error.
+
+       [1m2      [22mOperational error.
+
+       [1m3      [22mA child process returned a non-zero exit status.
+
+       [1m16     [22mAt least one of the pages/files/keywords didn't exist or wasn't matched.
+
+[1mENVIRONMENT[0m
+       [1mMANPATH[0m
+              If $[1mMANPATH [22mis set, its value is used as the path to search for manual pages.
+
+              See  the  [1mSEARCH PATH [22msection of [1mmanpath[22m(5) for the default behaviour and details of how this environment
+              variable is handled.
+
+       [1mMANROFFOPT[0m
+              Every time [1mman [22minvokes the formatter ([1mnroff[22m, [1mtroff[22m, or [1mgroff[22m), it adds the contents of $[1mMANROFFOPT [22mto the
+              formatter's command line.
+
+       [1mMANROFFSEQ[0m
+              If $[1mMANROFFSEQ [22mis set, its value is used to determine the set of preprocessors to pass each  manual  page
+              through.  The default preprocessor list is system dependent.
+
+       [1mMANSECT[0m
+              If  $[1mMANSECT  [22mis  set,  its value is a colon-delimited list of sections and it is used to determine which
+              manual sections to search and in what order.  The default is "1 n l 8 3 0 2 3type 3posix 3pm 3perl 3am  5
+              4 9 6 7", unless overridden by the [1mSECTION [22mdirective in [4m/etc/manpath.config[24m.
+
+       [1mMANPAGER[22m, [1mPAGER[0m
+              If  $[1mMANPAGER  [22mor  $[1mPAGER  [22mis set ($[1mMANPAGER [22mis used in preference), its value is used as the name of the
+              program used to display the manual page.  By default, [1mpager [22mis used, falling back to [1mcat [22mif [1mpager [22mis  not
+              found or is not executable.
+
+              The  value  may  be  a  simple command name or a command with arguments, and may use shell quoting (back‐
+              slashes, single quotes, or double quotes).  It may not use pipes to connect  multiple  commands;  if  you
+              need  that, use a wrapper script, which may take the file to display either as an argument or on standard
+              input.
+
+       [1mMANLESS[0m
+              If $[1mMANLESS [22mis set, its value will be used as the default prompt string for the [1mless [22mpager, as if it  had
+              been  passed  using  the  [1m-r  [22moption (so any occurrences of the text [1m$MAN_PN [22mwill be expanded in the same
+              way).  For example, if you want to set the prompt string unconditionally to “my prompt string”, set $[1mMAN‐[0m
+              [1mLESS [22mto ‘[1m-Psmy prompt string[22m’.  Using the [1m-r [22moption overrides this environment variable.
+
+       [1mBROWSER[0m
+              If $[1mBROWSER [22mis set, its value is a colon-delimited list of commands, each of which in turn is used to try
+              to start a web browser for [1mman --html[22m.  In each command, [4m%s[24m is replaced by a filename containing the HTML
+              output from [1mgroff[22m, [4m%%[24m is replaced by a single percent sign (%), and [4m%c[24m is replaced by a colon (:).
+
+       [1mSYSTEM [22mIf $[1mSYSTEM [22mis set, it will have the same effect as if it had been specified as the argument to the [1m-m [22mop‐
+              tion.
+
+       [1mMANOPT [22mIf $[1mMANOPT [22mis set, it will be parsed prior to [1mman's [22mcommand line and is expected to be in a similar  for‐
+              mat.   As  all  of the other [1mman [22mspecific environment variables can be expressed as command line options,
+              and are thus candidates for being included in $[1mMANOPT [22mit is expected  that  they  will  become  obsolete.
+              N.B.  All spaces that should be interpreted as part of an option's argument must be escaped.
+
+       [1mMANWIDTH[0m
+              If $[1mMANWIDTH [22mis set, its value is used as the line length for which manual pages should be formatted.  If
+              it is not set, manual pages will be formatted with a line length appropriate to the current terminal (us‐
+              ing  the  value  of  $[1mCOLUMNS[22m,  and [1mioctl[22m(2) if available, or falling back to 80 characters if neither is
+              available).  Cat pages will only be saved when the default formatting can be used, that is when the  ter‐
+              minal line length is between 66 and 80 characters.
+
+       [1mMAN_KEEP_FORMATTING[0m
+              Normally, when output is not being directed to a terminal (such as to a file or a pipe), formatting char‐
+              acters  are  discarded  to  make  it  easier  to  read  the  result  without  special tools.  However, if
+              $[1mMAN_KEEP_FORMATTING [22mis set to any non-empty value, these formatting characters are retained.   This  may
+              be useful for wrappers around [1mman [22mthat can interpret formatting characters.
+
+       [1mMAN_KEEP_STDERR[0m
+              Normally,  when  output  is  being directed to a terminal (usually to a pager), any error output from the
+              command used to produce formatted versions of manual pages is discarded to  avoid  interfering  with  the
+              pager's  display.  Programs such as [1mgroff [22moften produce relatively minor error messages about typographi‐
+              cal problems such as poor alignment, which are unsightly and generally  confusing  when  displayed  along
+              with the manual page.  However, some users want to see them anyway, so, if $[1mMAN_KEEP_STDERR [22mis set to any
+              non-empty value, error output will be displayed as usual.
+
+       [1mMAN_DISABLE_SECCOMP[0m
+              On Linux, [1mman [22mnormally confines subprocesses that handle untrusted data using a [1mseccomp[22m(2) sandbox.  This
+              makes it safer to run complex parsing code over arbitrary manual pages.  If this goes wrong for some rea‐
+              son  unrelated  to  the content of the page being displayed, you can set $[1mMAN_DISABLE_SECCOMP [22mto any non-
+              empty value to disable the sandbox.
+
+       [1mPIPELINE_DEBUG[0m
+              If the $[1mPIPELINE_DEBUG [22menvironment variable is set to "1", then [1mman  [22mwill  print  debugging  messages  to
+              standard error describing each subprocess it runs.
+
+       [1mLANG[22m, [1mLC_MESSAGES[0m
+              Depending on system and implementation, either or both of $[1mLANG [22mand $[1mLC_MESSAGES [22mwill be interrogated for
+              the  current  message  locale.   [1mman [22mwill display its messages in that locale (if available).  See [1msetlo‐[0m
+              [1mcale[22m(3) for precise details.
+
+[1mFILES[0m
+       [4m/etc/manpath.config[0m
+              man-db configuration file.
+
+       [4m/usr/share/man[0m
+              A global manual page hierarchy.
+
+[1mSTANDARDS[0m
+       POSIX.1-2001, POSIX.1-2008, POSIX.1-2017.
+
+[1mSEE ALSO[0m
+       [1mapropos[22m(1), [1mgroff[22m(1), [1mless[22m(1), [1mmanpath[22m(1), [1mnroff[22m(1), [1mtroff[22m(1), [1mwhatis[22m(1), [1mzsoelim[22m(1), [1mmanpath[22m(5),  [1mman[22m(7),  [1mcat‐[0m
+       [1mman[22m(8), [1mmandb[22m(8)
+
+       Documentation for some packages may be available in other formats, such as [1minfo[22m(1) or HTML.
+
+[1mHISTORY[0m
+       1990, 1991 – Originally written by John W. Eaton (jwe@che.utexas.edu).
+
+       Dec    23    1992:   Rik   Faith   (faith@cs.unc.edu)   applied   bug   fixes   supplied   by   Willem   Kasdorp
+       (wkasdo@nikhefk.nikef.nl).
+
+       30th April 1994 – 23rd February 2000: Wilf. (G.Wilford@ee.surrey.ac.uk) has been developing and maintaining this
+       package with the help of a few dedicated people.
+
+       30th October 1996 – 30th March 2001: Fabrizio Polacco <fpolacco@debian.org> maintained and enhanced this package
+       for the Debian project, with the help of all the community.
+
+       31st March 2001 – present day: Colin Watson <cjwatson@debian.org> is now developing and maintaining man-db.
+
+[1mBUGS[0m
+       https://gitlab.com/man-db/man-db/-/issues
+       https://savannah.nongnu.org/bugs/?group=man-db
+
+2.12.0                                                 2023-09-23                                                [4mMAN[24m(1)

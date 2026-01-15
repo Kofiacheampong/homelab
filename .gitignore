@@ -2,3 +2,4 @@
 .env.local
 backups/
 systemd/
+RESUME_UPDATE.md

@@ -1,0 +1,78 @@
+groups:
+  - name: docker_logs
+    interval: 1m
+    rules:
+      # Alert when container logs show high error rate
+      - alert: HighContainerErrorRate
+        expr: |
+          sum(rate({job="docker"} |~ "(?i)(error|fatal|exception|panic)" [5m])) by (container_name) > 1
+        for: 5m
+        labels:
+          severity: warning
+          category: logs
+        annotations:
+          summary: "High error rate in container {{ $labels.container_name }}"
+          description: "Container {{ $labels.container_name }} is logging more than 1 error per second over the last 5 minutes."
+
+      # Alert on container OOM (Out of Memory) events
+      - alert: ContainerOutOfMemory
+        expr: |
+          sum(count_over_time({job="docker"} |~ "(?i)(out of memory|oom|killed process)" [5m])) by (container_name) > 0
+        for: 1m
+        labels:
+          severity: critical
+          category: logs
+        annotations:
+          summary: "Container {{ $labels.container_name }} out of memory"
+          description: "Container {{ $labels.container_name }} has OOM errors in its logs."
+
+      # Alert on container crashes/restarts
+      - alert: ContainerRestarted
+        expr: |
+          sum(count_over_time({job="docker"} |~ "(?i)(container died|container stopped|exit code)" [5m])) by (container_name) > 0
+        for: 1m
+        labels:
+          severity: warning
+          category: logs
+        annotations:
+          summary: "Container {{ $labels.container_name }} restarted"
+          description: "Container {{ $labels.container_name }} has restart/stop events in logs."
+
+  - name: system_logs
+    interval: 1m
+    rules:
+      # Alert on critical system errors
+      - alert: CriticalSystemError
+        expr: |
+          sum(rate({job="varlogs"} |~ "(?i)(critical|emerg|alert)" [5m])) > 0
+        for: 2m
+        labels:
+          severity: critical
+          category: logs
+        annotations:
+          summary: "Critical system errors detected"
+          description: "System logs contain critical/emergency level messages."
+
+      # Alert on failed SSH/authentication attempts
+      - alert: FailedAuthenticationAttempts
+        expr: |
+          sum(rate({job="varlogs", process="sshd"} |~ "(?i)(failed|failure|invalid user)" [5m])) > 5
+        for: 5m
+        labels:
+          severity: warning
+          category: logs
+        annotations:
+          summary: "High rate of failed SSH authentication attempts"
+          description: "More than 5 failed SSH login attempts per second detected in the last 5 minutes."
+
+      # Alert on disk errors
+      - alert: DiskErrors
+        expr: |
+          sum(count_over_time({job="varlogs"} |~ "(?i)(disk error|i/o error|read error|write error)" [10m])) > 0
+        for: 1m
+        labels:
+          severity: critical
+          category: logs
+        annotations:
+          summary: "Disk I/O errors detected"
+          description: "System logs show disk or I/O errors in the last 10 minutes."

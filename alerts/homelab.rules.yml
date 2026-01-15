@@ -1,0 +1,76 @@
+groups:
+  - name: homelab_alerts
+    interval: 30s
+    rules:
+      # Critical: Service Down Alerts
+      - alert: PiHoleDown
+        expr: up{job="pihole"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: pihole
+        annotations:
+          summary: "Pi-hole is down"
+          description: "Pi-hole at {{ $labels.instance }} has been unreachable for 2 minutes. DNS resolution may be impacted."
+
+      - alert: NodeExporterDown
+        expr: up{job="docker-host"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          component: node-exporter
+        annotations:
+          summary: "Node exporter is down"
+          description: "Node exporter on {{ $labels.instance }} is not responding. System metrics unavailable."
+
+      # Resource Alerts
+      - alert: HighCPUUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value | humanize }}% for 5 minutes on {{ $labels.instance }}"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value | humanize }}% on {{ $labels.instance }}"
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Root filesystem has only {{ $value | humanize }}% free space remaining on {{ $labels.instance }}"
+
+      - alert: DiskSpaceWarning
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 20
+        for: 10m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "Disk space warning on {{ $labels.instance }}"
+          description: "Root filesystem has {{ $value | humanize }}% free space on {{ $labels.instance }}"
+
+      # Container Alerts
+      - alert: ContainerDown
+        expr: up{job="prometheus"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: monitoring
+        annotations:
+          summary: "Monitoring container is down"
+          description: "Container {{ $labels.job }} on {{ $labels.instance }} is not responding"

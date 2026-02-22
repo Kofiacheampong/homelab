@@ -9,6 +9,37 @@ Simple Prometheus + Grafana monitoring for your homelab. Monitor Pi-hole and loc
 - **Caddy**: Optional HTTPS reverse proxy
 - **Node Exporter**: System metrics (CPU, RAM, disk) for this Docker host
 
+## Security Hardening Defaults
+
+- **Pinned images**: Compose uses explicit image versions (no `latest`) and can be managed via `.env`.
+- **Healthchecks**: Core services expose readiness/health probes for faster failure detection.
+- **Network segmentation**:
+  - `edge`: internet-facing reverse proxy
+  - `observability`: Prometheus/Grafana/Loki internal traffic
+  - `siem`: reserved lane for Wazuh onboarding (currently connected to log services)
+
+## Wazuh SIEM Overlay
+
+- Wazuh is defined in `docker-compose.wazuh.yml` as an optional overlay (manager, indexer, dashboard).
+- It reuses the segmented `siem` network and keeps Wazuh dashboard/indexer bound to localhost by default.
+- Agent enrollment ports remain exposed for LAN agents:
+  - `1514/udp`
+  - `1515/tcp`
+
+Start base stack + Wazuh:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.wazuh.yml up -d
+```
+
+Check service health:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.wazuh.yml ps
+```
+
+Access:
+- **Wazuh Dashboard**: http://localhost:5601
+- **Wazuh API**: https://localhost:55000
+
 ## Quick Start
 
 ### 1. Update Pi-hole IP
@@ -20,13 +51,20 @@ Edit [prometheus.yml](prometheus.yml:21) and change the Pi-hole IP address:
 
 ### 2. Start the Stack
 
+Create `.env` from template and set a strong Grafana admin password:
+```bash
+cp .env.example .env
+```
+
+Optional: review pinned image versions in `.env` before starting.
+
 ```bash
 docker-compose up -d
 ```
 
 ### 3. Access Dashboards
 
-- **Grafana**: http://localhost:3000 (login: admin/admin)
+- **Grafana**: http://localhost:3000 (login from `.env`)
 - **Prometheus**: http://localhost:9090
 
 ## Setup Pi-hole Monitoring
@@ -79,7 +117,7 @@ docker-compose restart prometheus
 ## Configure Grafana
 
 1. Go to http://localhost:3000
-2. Login with admin/admin (change password when prompted)
+2. Login with `GRAFANA_ADMIN_USER` and `GRAFANA_ADMIN_PASSWORD` from `.env`
 3. Add Prometheus datasource:
    - Configuration → Data Sources → Add data source
    - Choose Prometheus

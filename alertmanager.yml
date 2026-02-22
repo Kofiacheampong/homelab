@@ -28,7 +28,7 @@ receivers:
   # ntfy.sh notifications for warnings
   - name: 'ntfy'
     webhook_configs:
-      - url: 'http://ntfy.sh/kofi-homelab-alerts'
+      - url: 'https://ntfy.sh/kofi-homelab-alerts'
         send_resolved: true
         http_config:
           follow_redirects: true
@@ -36,7 +36,7 @@ receivers:
   # ntfy.sh notifications for critical (more frequent)
   - name: 'ntfy-critical'
     webhook_configs:
-      - url: 'http://ntfy.sh/kofi-homelab-alerts'
+      - url: 'https://ntfy.sh/kofi-homelab-alerts'
         send_resolved: true
         http_config:
           follow_redirects: true

@@ -1,0 +1,101 @@
+services:
+  wazuh-indexer:
+    image: wazuh/wazuh-indexer:${WAZUH_VERSION:-4.8.2}
+    container_name: wazuh-indexer
+    ports:
+      - "127.0.0.1:9200:9200"
+    environment:
+      - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g -XX:MaxDirectMemorySize=512m
+      - discovery.type=single-node
+    volumes:
+      - wazuh-indexer-data:/var/lib/wazuh-indexer
+    networks:
+      siem:
+        aliases:
+          - wazuh.indexer
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "curl -ksS https://localhost:9200 >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+    restart: unless-stopped
+
+  wazuh-manager:
+    image: wazuh/wazuh-manager:${WAZUH_VERSION:-4.8.2}
+    container_name: wazuh-manager
+    user: root
+    ports:
+      - "1514:1514/udp"
+      - "1515:1515/tcp"
+      - "1514:1514/tcp"
+      - "127.0.0.1:55000:55000"
+    environment:
+      - INDEXER_URL=https://wazuh-indexer:9200
+      - INDEXER_USERNAME=${WAZUH_INDEXER_USERNAME:-admin}
+      - INDEXER_PASSWORD=${WAZUH_INDEXER_PASSWORD:-admin}
+      - FILEBEAT_SSL_VERIFICATION_MODE=none
+      - SSL_VERIFY_HOSTNAME=no
+      - API_USERNAME=${WAZUH_API_USER:-wazuh}
+      - API_PASSWORD=${WAZUH_API_PASSWORD:-wazuh}
+    networks:
+      - siem
+    depends_on:
+      wazuh-indexer:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -ksS https://localhost:55000 >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    restart: unless-stopped
+
+  wazuh-dashboard:
+    image: wazuh/wazuh-dashboard:${WAZUH_VERSION:-4.8.2}
+    container_name: wazuh-dashboard
+    ports:
+      - "127.0.0.1:5601:5601"
+    environment:
+      - OPENSEARCH_HOSTS=["https://wazuh-indexer:9200"]
+      - INDEXER_URL=https://wazuh-indexer:9200
+      - OPENSEARCH_SSL_VERIFICATIONMODE=none
+      - WAZUH_API_URL=https://wazuh-manager
+      - DASHBOARD_USERNAME=${WAZUH_INDEXER_USERNAME:-admin}
+      - DASHBOARD_PASSWORD=${WAZUH_INDEXER_PASSWORD:-admin}
+      - API_USERNAME=${WAZUH_API_USER:-wazuh}
+      - API_PASSWORD=${WAZUH_API_PASSWORD:-wazuh}
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
+    volumes:
+      - wazuh-dashboard-data:/usr/share/wazuh-dashboard/data
+    networks:
+      - siem
+      - edge
+    depends_on:
+      wazuh-indexer:
+        condition: service_healthy
+      wazuh-manager:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD-SHELL", "curl -ksS https://localhost:5601 >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    restart: unless-stopped
+
+networks:
+  edge:
+  siem:
+
+volumes:
+  wazuh-indexer-data:
+  wazuh-dashboard-data:

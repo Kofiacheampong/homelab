@@ -38,20 +38,6 @@ scrape_configs:
       - output:
           source: output
 
-  # Scrape system logs
-  - job_name: system
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: varlogs
-          host: docker-host
-          __path__: /var/log/*.log
-    pipeline_stages:
-      - regex:
-          expression: '^(?P<timestamp>\S+\s+\S+\s+\S+)\s+(?P<hostname>\S+)\s+(?P<process>\S+?)(\[(?P<pid>\d+)\])?:\s+(?P<message>.*)$'
-      - labels:
-          hostname:
-          process:
-      - output:
-          source: message
+  # System logs are disabled by default because many host files under /var/log
+  # are root-only on Debian/Ubuntu and generate noisy permission errors.
+  # Re-enable with a narrower readable path or run promtail with elevated access.

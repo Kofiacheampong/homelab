@@ -24,6 +24,11 @@ scrape_configs:
     static_configs:
       - targets: ['node-exporter:9100']
 
+  # Docker container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+
   # Pi-hole metrics
   # SETUP: Install ekofr/pihole-exporter on your Pi-hole host
   # Then update the IP below to your Pi-hole's IP address

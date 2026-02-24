@@ -3,7 +3,7 @@ services:
     image: wazuh/wazuh-indexer:${WAZUH_VERSION:-4.8.2}
     container_name: wazuh-indexer
     ports:
-      - "127.0.0.1:9200:9200"
+      - ":9200:9200"
     environment:
       - OPENSEARCH_JAVA_OPTS=-Xms1g -Xmx1g -XX:MaxDirectMemorySize=512m
       - discovery.type=single-node
@@ -33,7 +33,7 @@ services:
       - "1514:1514/udp"
       - "1515:1515/tcp"
       - "1514:1514/tcp"
-      - "127.0.0.1:55000:55000"
+      - ":55000:55000"
     environment:
       - INDEXER_URL=https://wazuh-indexer:9200
       - INDEXER_USERNAME=${WAZUH_INDEXER_USERNAME:-admin}
@@ -59,7 +59,7 @@ services:
     image: wazuh/wazuh-dashboard:${WAZUH_VERSION:-4.8.2}
     container_name: wazuh-dashboard
     ports:
-      - "127.0.0.1:5601:5601"
+      - ":5601:5601"
     environment:
       - OPENSEARCH_HOSTS=["https://wazuh-indexer:9200"]
       - INDEXER_URL=https://wazuh-indexer:9200

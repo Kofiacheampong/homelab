@@ -8,7 +8,7 @@ services:
     image: ${PROMETHEUS_IMAGE:-prom/prometheus:v2.55.1}
     container_name: prometheus
     ports:
-      - "127.0.0.1:9090:9090"
+      - ":9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./alerts:/etc/prometheus/alerts:ro
@@ -36,7 +36,7 @@ services:
     image: ${ALERTMANAGER_IMAGE:-prom/alertmanager:v0.27.0}
     container_name: alertmanager
     ports:
-      - "127.0.0.1:9093:9093"
+      - ":9093:9093"
     volumes:
       - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
       - alertmanager-data:/alertmanager
@@ -61,7 +61,7 @@ services:
     image: ${GRAFANA_IMAGE:-grafana/grafana:11.1.5}
     container_name: grafana
     ports:
-      - "127.0.0.1:3000:3000"
+      - ":3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana
     environment:
@@ -125,7 +125,7 @@ services:
       - /sys:/host/sys:ro
       - /:/rootfs:ro
     ports:
-      - "127.0.0.1:9100:9100"
+      - ":9100:9100"
     networks:
       - observability
     security_opt:
@@ -145,7 +145,7 @@ services:
     image: ${LOKI_IMAGE:-grafana/loki:2.9.8}
     container_name: loki
     ports:
-      - "127.0.0.1:3100:3100"
+      - ":3100:3100"
     volumes:
       - ./loki-config.yml:/etc/loki/local-config.yaml:ro
       - ./loki-rules:/etc/loki/rules:ro
@@ -190,6 +190,33 @@ services:
       start_period: 30s
     restart: unless-stopped
 
+  cadvisor:
+    image: ${CADVISOR_IMAGE:-gcr.io/cadvisor/cadvisor:v0.49.2}
+    container_name: cadvisor
+    ports:
+      - ":8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    networks:
+      - observability
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/healthz >/dev/null 2>&1 || curl -fsS http://localhost:8080/healthz >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
 volumes:
   prometheus-data:
   grafana-data:
@@ -197,3 +224,4 @@ volumes:
   caddy-config:
   alertmanager-data:
   loki-data:
+

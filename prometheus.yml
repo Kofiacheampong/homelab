@@ -42,10 +42,9 @@ scrape_configs:
 
   # Additional RPi/servers running node-exporter
   # SETUP: Install node-exporter on each machine, then add targets below
-  # - job_name: 'homelab-servers'
-  #   static_configs:
-  #     - targets:
-  #         - '192.168.1.201:9100'  # rpi-1
-  #         - '192.168.1.202:9100'  # rpi-2
-  #       labels:
-  #         group: 'raspberry-pi'
+  - job_name: 'homelab-servers'
+    static_configs:
+      - targets:
+          - '192.168.1.200:9100'  # rpi-1
+        labels:
+          group: 'raspberry-pi'
